@@ -2,10 +2,19 @@ var myGamePiece;
 var myEnemies = [];
 var myOtherEnemies = [];
 var myScore;
+var myGameResult;
+var myLevel;
+var colors = ['#d9d9db', '#cbd9ef', '#efe4cb'];
+var name = 2; //prompt('insert player name');
+var frames = [];
+var bestPlayer = document.getElementById('player');
+var bestScore = document.getElementById('score');
+
 
 function startGame() {
 	myGamePiece = new component(randomPositionX(), randomPositionY(), 15, 'sprite-test.png', 0, 0, 'image');
-	myScore = new component(400, 50, 'italic small-caps bold 12px arial', 'black', 0, 0, 'text');
+	myLevel = new component(400, 30, 'italic small-caps bold 12px arial', '#4f4e4b', 0, 0, 'text');
+	myScore = new component(400, 50, 'italic small-caps bold 12px arial', '#4f4e4b', 0, 0, 'text');
 	myGameArea.start();
 }
 
@@ -14,6 +23,7 @@ var myGameArea = {
 	start: function() {
 		this.canvas.width = 500;
 		this.canvas.height = 500;
+		this.canvas.style.border = '1px solid #4f4e4b';
 		this.context = this.canvas.getContext('2d');
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		this.canvas.focus();
@@ -26,6 +36,17 @@ var myGameArea = {
 	},
 	stop: function() {
 		clearInterval(this.interval);
+	},
+	changeColor: function()	{
+		var colorIndex = Math.round(this.frameNumber / 300) % 3;
+		this.canvas.style.backgroundColor = colors[colorIndex];
+	},
+	result: function() {
+		myGameResult = Math.round(this.frameNumber / 30);
+	},
+	copy: function() {
+		var frame = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		frames.push(frame);
 	}
 };
 
@@ -102,7 +123,7 @@ function component(x, y, radius, color, speedX, speedY, type) {
 				this.y - this.radius,	// dy	Destination y
 				this.radius * 2,		// dw	Destination width
 				this.radius * 2			// dh	Destination height
-			);
+				);
 		} 
 
 		else {
@@ -158,6 +179,7 @@ function component(x, y, radius, color, speedX, speedY, type) {
 	}
 }
 
+
 function everyInterval(n) {
 	if ((myGameArea.frameNumber / n) % 1 == 0) {
 		return true;
@@ -192,12 +214,28 @@ function moveGamePiece(event) {
 	}
 }
 
+var arr = JSON.parse(localStorage.getItem('bestscore')) || [0, 0];
+bestPlayer.innerHTML = arr[0];
+bestScore.innerHTML = arr[1];
+
+
+function setHistoryItem() {
+	if (myGameResult > Number(arr[1])) {
+		arr[1] = myGameResult;
+		arr[0] = name;
+		localStorage.setItem('bestscore', JSON.stringify(arr));
+	}
+}
+
 function updateGameArea() {
 	var ctx = myGameArea.context;
 
 	for (var j = 0; j < myOtherEnemies.length; j++) {
 		if(myGamePiece.collisionDetected(myOtherEnemies[j])) {
 			myGameArea.stop();
+			setHistoryItem();
+			bestPlayer.innerHTML = arr[0];
+			bestScore.innerHTML = arr[1];
 			return;
 		} 
 	}
@@ -205,6 +243,9 @@ function updateGameArea() {
 	for (var i = 0; i < myEnemies.length; i++) {
 		if(myGamePiece.collisionDetected(myEnemies[i])) {
 			myGameArea.stop();
+			setHistoryItem();
+			bestPlayer.innerHTML = arr[0];
+			bestScore.innerHTML = arr[1];
 			return;
 		} 
 	}
@@ -213,9 +254,14 @@ function updateGameArea() {
 	myGameArea.frameNumber += 1;
 	if (myGameArea.frameNumber == 1 || everyInterval(150)) {
 		myEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-enemy.png', randomNumber(), randomNumber(), 'image'));
+	}
+
+	if (myGameArea.frameNumber == 1 || everyInterval(300)) {
 		myOtherEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-another-enemy.png', randomNumber(), randomNumber(), 'image'));
 	}
 
+	myGameArea.changeColor();
+	
 	for (i = 0; i < myEnemies.length; i++) {
 		myEnemies[i].newPos();
 		myEnemies[i].draw(ctx);
@@ -227,12 +273,45 @@ function updateGameArea() {
 		myOtherEnemies[j].draw(ctx);
 	}
 
-	
-	myScore.text = "SCORE: " + Math.round(myGameArea.frameNumber / 30);
+	myGameArea.result();
+	myLevel.text = "LEVEL: " + Math.round(myGameArea.frameNumber / 300); 
+	myLevel.draw(ctx);
+	myScore.text = "SCORE: " + myGameResult;
 	myScore.draw(ctx);
 	myGamePiece.newPos();
 	myGamePiece.draw(ctx);
+	myGameArea.copy();
+
 }
 
-startGame();
+function bestReplay() {
+	var ctx = myGameArea.context;
+	var frameIndex = 0;
+	var timer = setInterval(function() {
+		ctx.putImageData(frames[frameIndex++], 0, 0);
+		if (frameIndex >= frames.length) {
+			clearInterval(timer);
+		}
+	}, 5);
+}
 
+
+
+
+document.getElementById('reset').addEventListener('click', bestReplay);
+
+var router = new Router({
+  routes: [{
+    name: 'index',
+    match: '',
+    //onEnter: () => console.log('onEnter index')
+  }, {
+    name: 'play-game',
+    match: (text) => text === 'play-game',
+    onEnter: () => startGame()
+  }, {
+    name: 'replay-game',
+    match: (text) => text === 'replay-game',
+    onEnter: () => bestReplay()
+  }]
+});
