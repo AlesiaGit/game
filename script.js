@@ -3,7 +3,7 @@ var myScore;
 var myGameResult;
 var myLevel;
 var colors = ['#d9d9db', '#cbd9ef', '#efe4cb'];
-var frames = [];
+//var frames = [];
 var bestPlayer = document.getElementById('player');
 var bestScore = document.getElementById('score');
 var gameWrapper = document.getElementById('game-wrapper');
@@ -45,6 +45,7 @@ var myGameArea = {
 		this.myEnemies = [];
 		this.myOtherEnemies = [];
 		this.frames = [];
+		this.playerName = playerName;
 	},
 	clear: function() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -61,7 +62,7 @@ var myGameArea = {
 	},
 	copy: function() {
 		var frame = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-		frames.push(frame);
+		this.frames.push(frame);
 	}
 };
 
@@ -254,8 +255,6 @@ function updateGameArea() {
 			buttonsBlock.style.display = 'flex';
 			buttonsBlock.style.position = 'absolute';
 			replayButton.style.display = 'block';
-			myGameArea.myEnemies = [];
-			myGameArea.myOtherEnemies = [];
 			return;
 		} 
 	}
@@ -269,8 +268,7 @@ function updateGameArea() {
 			buttonsBlock.style.display = 'flex';
 			buttonsBlock.style.position = 'absolute';
 			replayButton.style.display = 'block';
-			myGameArea.myEnemies = [];
-			myGameArea.myOtherEnemies = [];
+			myGameArea.clear();
 			return;
 		} 
 	}
@@ -313,8 +311,8 @@ function bestReplay() {
 	var ctx = myGameArea.context;
 	var frameIndex = 0;
 	var timer = setInterval(function() {
-		ctx.putImageData(frames[frameIndex++], 0, 0);
-		if (frameIndex >= frames.length) {
+		ctx.putImageData(myGameArea.frames[frameIndex++], 0, 0);
+		if (frameIndex >= myGameArea.frames.length) {
 			clearInterval(timer);
 		}
 	}, 5);
@@ -322,8 +320,6 @@ function bestReplay() {
 
 //localStorage.clear();
 
-
-document.getElementById('replay').addEventListener('click', bestReplay);
 
 var router = new Router({
   routes: [{
