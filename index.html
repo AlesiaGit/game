@@ -2,15 +2,26 @@
 <html>
 <head>
 	<title>game mdn</title>
-
+	<link href='style.css' rel='stylesheet'>
 </head>
 <body>
-<a id='play' href="#play-game">play</a>
-<!-- <canvas id='canvas' width=500 height=500 style="border: 1px solid black;"></canvas> -->
-<div>Best score: <span id='score'></span></div>
-<div>Best player: <span id='player'></span></div>
-<a id='reset' href='#replay-game'>play again</a>
-<script src='router.js'></script>
-<script src='script.js'></script>
+	<div class='game-wrapper' id='game-wrapper'>
+		<div class='score-block' id='score-block'>
+			<p class='text-h1'>Welcome to my Arcade Game</p>
+			<div class='text-normal'>Best score: <span id='score'></span></div>
+			<div class='text-normal'>Best player: <span id='player'></span></div>
+			<input id='player-name' class='user-name-input' type='text' placeholder='Enter user name...' autofocus>
+		</div>
+		<div class='buttons-block' id='buttons-block'>
+			<div class='button-style' id='play-button'>
+				<a class='link-style' id='play' href="#play-game">Start game</a>
+			</div>
+			<div class='button-style' id='replay-button'>
+				<a class='link-style' id='replay' href='#replay-game'>Replay game</a>
+			</div>
+		</div>
+	</div>
+	<script src='router.js'></script>
+	<script src='script.js'></script>
 </body>
 </html>

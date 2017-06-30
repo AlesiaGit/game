@@ -1,15 +1,25 @@
 var myGamePiece;
-var myEnemies = [];
-var myOtherEnemies = [];
 var myScore;
 var myGameResult;
 var myLevel;
 var colors = ['#d9d9db', '#cbd9ef', '#efe4cb'];
-var name = 2; //prompt('insert player name');
 var frames = [];
 var bestPlayer = document.getElementById('player');
 var bestScore = document.getElementById('score');
+var gameWrapper = document.getElementById('game-wrapper');
+var scoreBlock = document.getElementById('score-block');
+var buttonsBlock = document.getElementById('buttons-block');
+var playerName;
+var playButton = document.getElementById('play-button');
+var replayButton = document.getElementById('replay-button');
+//var myEnemies = [];
+//var myOtherEnemies = [];
 
+playButton.addEventListener('click', function() {
+	playerName = document.getElementById('player-name').value;
+})
+
+replayButton.style.display = 'none';
 
 function startGame() {
 	myGamePiece = new component(randomPositionX(), randomPositionY(), 15, 'sprite-test.png', 0, 0, 'image');
@@ -25,11 +35,16 @@ var myGameArea = {
 		this.canvas.height = 500;
 		this.canvas.style.border = '1px solid #4f4e4b';
 		this.context = this.canvas.getContext('2d');
-		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+		gameWrapper.appendChild(this.canvas);
+		scoreBlock.style.display = 'none';
+		buttonsBlock.style.display = 'none';
 		this.canvas.focus();
 		this.frameNumber = 0;
 		this.interval = setInterval(updateGameArea, 20);
 		window.addEventListener('keydown', moveGamePiece);
+		this.myEnemies = [];
+		this.myOtherEnemies = [];
+		this.frames = [];
 	},
 	clear: function() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -222,30 +237,40 @@ bestScore.innerHTML = arr[1];
 function setHistoryItem() {
 	if (myGameResult > Number(arr[1])) {
 		arr[1] = myGameResult;
-		arr[0] = name;
+		arr[0] = playerName;
 		localStorage.setItem('bestscore', JSON.stringify(arr));
 	}
 }
 
 function updateGameArea() {
 	var ctx = myGameArea.context;
-
-	for (var j = 0; j < myOtherEnemies.length; j++) {
-		if(myGamePiece.collisionDetected(myOtherEnemies[j])) {
+	
+	for (var j = 0; j < myGameArea.myOtherEnemies.length; j++) {
+		if(myGamePiece.collisionDetected(myGameArea.myOtherEnemies[j])) {
 			myGameArea.stop();
 			setHistoryItem();
 			bestPlayer.innerHTML = arr[0];
 			bestScore.innerHTML = arr[1];
+			buttonsBlock.style.display = 'flex';
+			buttonsBlock.style.position = 'absolute';
+			replayButton.style.display = 'block';
+			myGameArea.myEnemies = [];
+			myGameArea.myOtherEnemies = [];
 			return;
 		} 
 	}
 	
-	for (var i = 0; i < myEnemies.length; i++) {
-		if(myGamePiece.collisionDetected(myEnemies[i])) {
+	for (var i = 0; i < myGameArea.myEnemies.length; i++) {
+		if(myGamePiece.collisionDetected(myGameArea.myEnemies[i])) {
 			myGameArea.stop();
 			setHistoryItem();
 			bestPlayer.innerHTML = arr[0];
 			bestScore.innerHTML = arr[1];
+			buttonsBlock.style.display = 'flex';
+			buttonsBlock.style.position = 'absolute';
+			replayButton.style.display = 'block';
+			myGameArea.myEnemies = [];
+			myGameArea.myOtherEnemies = [];
 			return;
 		} 
 	}
@@ -253,24 +278,24 @@ function updateGameArea() {
 
 	myGameArea.frameNumber += 1;
 	if (myGameArea.frameNumber == 1 || everyInterval(150)) {
-		myEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-enemy.png', randomNumber(), randomNumber(), 'image'));
+		myGameArea.myEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-enemy.png', randomNumber(), randomNumber(), 'image'));
 	}
 
 	if (myGameArea.frameNumber == 1 || everyInterval(300)) {
-		myOtherEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-another-enemy.png', randomNumber(), randomNumber(), 'image'));
+		myGameArea.myOtherEnemies.push(new component(randomPositionX(), randomPositionY(), 15, 'sprite-another-enemy.png', randomNumber(), randomNumber(), 'image'));
 	}
 
 	myGameArea.changeColor();
 	
-	for (i = 0; i < myEnemies.length; i++) {
-		myEnemies[i].newPos();
-		myEnemies[i].draw(ctx);
+	for (i = 0; i < myGameArea.myEnemies.length; i++) {
+		myGameArea.myEnemies[i].newPos();
+		myGameArea.myEnemies[i].draw(ctx);
 	}
 
-	for (j = 0; j < myOtherEnemies.length; j++) {
-		myOtherEnemies[j].startFollowing(myGamePiece);
-		myOtherEnemies[j].newPos();
-		myOtherEnemies[j].draw(ctx);
+	for (j = 0; j < myGameArea.myOtherEnemies.length; j++) {
+		myGameArea.myOtherEnemies[j].startFollowing(myGamePiece);
+		myGameArea.myOtherEnemies[j].newPos();
+		myGameArea.myOtherEnemies[j].draw(ctx);
 	}
 
 	myGameArea.result();
@@ -295,10 +320,10 @@ function bestReplay() {
 	}, 5);
 }
 
+//localStorage.clear();
 
 
-
-document.getElementById('reset').addEventListener('click', bestReplay);
+document.getElementById('replay').addEventListener('click', bestReplay);
 
 var router = new Router({
   routes: [{

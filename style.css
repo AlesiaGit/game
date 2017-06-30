@@ -1,0 +1,106 @@
+@font-face {
+  font-family: "Lato";
+  font-weight: 400;
+  font-style: normal;
+  src: url("fonts/lato-regular.woff2") format("woff2"),
+       url("fonts/lato-regular.woff") format("woff"),
+}
+
+@font-face {
+  font-family: "Lato";
+  font-weight: 600;
+  font-style: normal;
+  src: url("fonts/lato-bold.woff2") format("woff2"),
+       url("fonts/lato-bold.woff") format("woff"),
+}
+
+.game-wrapper {
+	position: relative;
+	width: 500px;
+	height: 500px;
+	border-radius: 10px;
+	border: 1px solid #cbd9ef;
+	background-color: #cbd9ef;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
+
+.text-h1 {
+	font-family: Lato;
+	font-weight: 600;
+	font-size: 20px;
+	text-transform: uppercase;
+}
+
+.buttons-block {
+	display: flex;
+	flex-direction: row;
+	padding-top: 25px;
+}
+
+.text-normal {
+	font-family: Lato;
+	font-weight: 300;
+	font-size: 16px;
+	text-transform: uppercase;
+	line-height: 1.7;
+	text-align: center;
+}
+
+.score-block {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.user-name-input {
+	outline: none;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.34);
+    height: 40px;
+    width: 300px;
+    text-indent: 15px;
+    margin-top: 20px;
+    font-family: Lato;
+	font-weight: 300;
+	font-size: 16px;
+}
+
+.user-name-input::-webkit-input-placeholder {
+	font-family: Lato;
+	font-weight: 300;
+	font-size: 16px;
+}
+
+.button-style {
+    padding: 10px;
+    width: 120px;
+    height: 20px;
+    border-radius: 7px;
+    background-color: #6f6f70;
+    margin-left: 10px;
+    margin-right: 10px;
+    text-align: center;
+    opacity: 0.6;
+}
+
+.link-style {
+	text-decoration: none;
+	font-family: Lato;
+	font-weight: 400;
+	font-size: 16px;
+	text-transform: uppercase;
+	color: #ffffff;
+}
+
+.link-style:hover,
+.link-style:active,
+.link-style:visited {
+	text-decoration: none;
+	color: #ffffff;
+}
+
